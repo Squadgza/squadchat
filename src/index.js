@@ -4,7 +4,7 @@ import cors from 'cors';
 import path from 'path';
 import { createServer } from 'http';
 import { Server as SocketIOServer } from 'socket.io';
-import { Session } from 'inspector';
+import { fetchPrismaData } from './prismaQueries.js';
 
 dotenv.config();
 
@@ -20,6 +20,14 @@ app.get('/',(req,res)=>{
   res.sendFile(path.join(process.cwd(), '/src/index.html'));
 })
 
+app.get('/data', async (req, res) => {
+  try {
+    const dataFromPrisma = await fetchPrismaData(); // Call the function from prismaQueries.js
+    res.json(dataFromPrisma);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 io.on('connection', (socket) => {
   socket.on('chat message', (msg) => {
@@ -31,3 +39,4 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`App is running on port ${PORT}`);
 });
+
