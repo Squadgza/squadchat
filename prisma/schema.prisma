@@ -9,10 +9,13 @@ datasource db {
 
 model User {
   id    Int     @id @default(autoincrement())
-  email String  @unique
+  email String  @unique 
   password String
   firstName String
   lastName String
+  messages Message[]
+  room Room @relation(fields: [roomId],references: [id])
+  roomId Int
 }
 
 
@@ -20,11 +23,29 @@ model Message{
     id    Int     @id @default(autoincrement())
     content String
     seen Boolean
+    author   User @relation(fields: [authorId], references: [id])
+    authorId Int
+    // rooms    Room[]    @relation("RoomToMessage")
+    rooms RoomToMessage[]
     timeStampSent DateTime
 }
 
 model Room {
       id    Int     @id @default(autoincrement())
       name String
+      messages RoomToMessage[]
+      users User[]
       timestampCreated DateTime
 }
+
+
+model RoomToMessage {
+   id    Int     @id @default(autoincrement())
+  message Message @relation(fields: [messageId], references: [id])
+  messageId Int
+  room Room @relation(fields: [roomId],references: [id])
+  roomId Int
+}
+
+
+
